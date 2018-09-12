@@ -1,0 +1,13 @@
+---
+
+- name: including validation tasks for cloud-init
+  include: "validate.yml"
+  when: vmware_instance_cloudinit
+
+- name: including tasks for cloud-init
+  include: "cloud_init.yml"
+  when: vmware_instance_cloudinit
+
+- name: including tasks for standard templats
+  include: "clone.yml"
+  when: not vmware_instance_cloudinit

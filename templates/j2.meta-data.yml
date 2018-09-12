@@ -1,0 +1,1 @@
+{{ vmware_instance_cloudinit_meta_data | encode_yaml }}

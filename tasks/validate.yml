@@ -1,0 +1,30 @@
+---
+
+- fail:
+    msg: "When using the cloud-init provisioner a vCenter datastore path must be provided with the variable vmware_instance_cloudinit_iso_path"
+  when: vmware_instance_cloudinit_iso_path is undefined or vmware_instance_cloudinit_iso_path == ''
+
+- fail:
+    msg: "When using the cloud-init provisioner a vCenter datastore must be provided with the variable vmware_instance_cloudinit_iso_datastore"
+  when: vmware_instance_cloudinit_iso_datastore is undefined or vmware_instance_cloudinit_iso_datastore == ''
+
+- fail:
+    msg: "When using the cloud-init provisioner a meta_data dictionary must be defined using the variable vmware_instance_cloudinit_meta_data"
+  when: vmware_instance_cloudinit_meta_data is undefined or vmware_instance_cloudinit_meta_data == ''
+
+- fail:
+    msg: "When using the cloud-init provisioner a cloud_config dictionary must be defined using the variable vmware_instance_cloudinit_cloud_config"
+  when: vmware_instance_cloudinit_cloud_config is undefined or vmware_instance_cloudinit_cloud_config == ''
+
+- fail:
+    msg: "When using the cloud-init provisioner at least one user must be defined using the variable vmware_instance_cloudinit_cloud_config.users"
+  when: vmware_instance_cloudinit_cloud_config.users is undefined or vmware_instance_cloudinit_cloud_config.users == ''
+
+- fail:
+    msg: "When using the cloud-init provisioner at least one user must be defined using the variable vmware_instance_cloudinit_cloud_config.users"
+  when: vmware_instance_cloudinit_cloud_config.users[0] is undefined or vmware_instance_cloudinit_cloud_config.users[0] == ''
+
+- fail:
+    msg: "Each item in the vmware_instance_cloudinit_cloud_config.user list requires a name attribute"
+  when: item.name is undefined or item.name == ''
+  with_items: "{{ vmware_instance_cloudinit_cloud_config.users }}"
