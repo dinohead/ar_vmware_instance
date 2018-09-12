@@ -1,4 +1,4 @@
-|# vmware_instance| | | | |
+# vmware_instance
 
 Creates a VM by cloning from an existing template in VMware.
 
