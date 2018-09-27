@@ -47,7 +47,7 @@
 - set_fact:
     vmware_instance_os_disk:
       - datastore: "{{ vmware_instance_datastore }}"
-        size_kb: '{{ vmware_instance_disk_facts.guest_disk_facts["0"].capacity_in_kb }}'
+        size_gb: '{{ vmware_instance_disk_size }}'
         type: >-
                {%- if vmware_instance_disk_facts.guest_disk_facts["0"].backing_thinprovisioned -%}
                thin
