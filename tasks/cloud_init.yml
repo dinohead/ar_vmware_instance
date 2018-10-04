@@ -116,8 +116,8 @@
   delay: 10
   until: vmware_instance_guest_facts.instance.ipv4
 
-- set_fact:
-    vmware_instance_host_ip: "{{ vmware_instance_guest_facts.instance.ipv4 }}"
+- name: Get the IP for the instance
+  include: "get_ip.yml"
 
 - name: RAW | Wait for cloud-init to finish
   raw: /bin/ls /var/lib/cloud/instance/boot-finished

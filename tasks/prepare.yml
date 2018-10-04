@@ -12,14 +12,8 @@
   register: task_result
   ignore_errors: true
 
-- debug:
-    var: task_result
-
 - set_fact:
     vmware_instance_exists: "{{ not task_result.failed }}"
-
-- debug:
-    var: vmware_instance_exists
 
 
 ########### Build a list of dictionaries for disks attached to existing hosts
@@ -39,9 +33,6 @@
     validate_certs: false
   register: vmware_instance_disk_facts
   when: vmware_instance_exists
-
-- debug:
-    var: vmware_instance_disk_facts
 
 # Create a list of dicts with one entry. The single entry in this list is the system OS disk
 - set_fact:

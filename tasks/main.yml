@@ -11,10 +11,13 @@
   include: "cloud_init.yml"
   when: vmware_instance_cloudinit and not vmware_instance_exists
 
-- name: including tasks for standard templats
+- name: including tasks for standard templates
   include: "clone.yml"
   when: not vmware_instance_cloudinit and not vmware_instance_exists
 
-- name: including tasks existing instnaces
+- name: including tasks existing instances
   include: "modify.yml"
   when: vmware_instance_exists
+
+- name: Get the IP for the instance
+  include: "get_ip.yml"
