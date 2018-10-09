@@ -1,0 +1,18 @@
+---
+
+- name: VMWARE_GUEST_FACTS | Get facts on the VM
+  vmware_guest_facts:
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username }}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    name: "{{ vmware_instance_name }}"
+    folder: "{{ vmware_instance_folder }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    validate_certs: false
+  register: vmware_instance_guest_facts
+
+- set_fact:
+    vmware_instance_primary_nic: "{{ 'hw_' + vmware_instance_guest_facts.instance.hw_interfaces[0] }}"
+
+- set_fact:
+    vmware_instance_host_ip: "{{ ( vmware_instance_guest_facts['instance'][vmware_instance_primary_nic]['ipaddresses'] | reject('match', '[:]' ) | list )[0]  }}"
