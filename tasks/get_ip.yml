@@ -15,4 +15,4 @@
     vmware_instance_primary_nic: "{{ 'hw_' + vmware_instance_guest_facts.instance.hw_interfaces[0] }}"
 
 - set_fact:
-    vmware_instance_host_ip: "{{ ( vmware_instance_guest_facts['instance'][vmware_instance_primary_nic]['ipaddresses'] | reject('match', '[:]' ) | list )[0]  }}"
+    vmware_instance_host_ip: "{{ ( vmware_instance_guest_facts['instance'][vmware_instance_primary_nic]['ipaddresses'] | reject('search', ':' ) | list )[0]  }}"
