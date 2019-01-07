@@ -1,0 +1,16 @@
+---
+ansible_python_interpreter: python
+vmware_instance_cluster: "mycluster"
+vmware_instance_cpus: 1
+vmware_instance_datacenter: "datacenter"
+vmware_instance_datastore: "datastore"
+vmware_instance_disk_size: 30
+vmware_instance_folder: '/mycluster/vm'
+vmware_instance_memory: 1024
+vmware_instance_name: "{{ inventory_hostname_short | upper }}"
+vmware_instance_network: "network"
+vmware_instance_template: "template"
+vmware_instance_vcenter_fqdn: "vcenter.domain.com"
+vmware_instance_vcenter_password: "CHANGEME"
+vmware_instance_vcenter_username: "admin"
+vmware_instance_cloudinit: false
