@@ -1,0 +1,2 @@
+#cloud-config
+{{ vmware_instance_cloudinit_cloud_config | encode_yaml }}

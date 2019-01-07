@@ -1,0 +1,77 @@
+---
+- name: VMWARE_GUEST_FACTS | Determine if instance exists
+  local_action:
+    module: vmware_guest_facts
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username }}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    folder: "{{ vmware_instance_folder }}"
+    validate_certs: no
+    name: "{{ vmware_instance_name }}"
+  register: task_result
+  ignore_errors: true
+
+- set_fact:
+    vmware_instance_exists: "{{ not task_result.failed }}"
+
+
+########### Build a list of dictionaries for disks attached to existing hosts
+# The OS disk will be set to the value in {{ vmware_instance_datastore }}
+# Any additional disks will be set to their current size
+# This strategy will allow for growing the OS disk but preserve any attached data
+# disks. To grow a data disk, check out the ar_add_data_disk role
+
+- name: VMWARE_GUEST_DISK_FACTS | Gather facts about host disks
+  local_action:
+    module: vmware_guest_disk_facts
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username }}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    name: "{{ vmware_instance_name }}"
+    validate_certs: false
+  register: vmware_instance_disk_facts
+  when: vmware_instance_exists
+
+# Create a list of dicts with one entry. The single entry in this list is the system OS disk
+- set_fact:
+    vmware_instance_os_disk:
+      - datastore: "{{ vmware_instance_datastore }}"
+        size_gb: '{{ vmware_instance_disk_size }}'
+        type: >-
+               {%- if vmware_instance_disk_facts.guest_disk_facts["0"].backing_thinprovisioned -%}
+               thin
+               {%- else -%}
+               thick
+               {%- endif -%}
+  when: vmware_instance_exists
+
+# Build a temporary dict for each item in the vmware_instance list
+- set_fact:
+    vmware_instance_temp_dict:
+      datastore: "{{ vmware_instance_disk_facts.guest_disk_facts[item].backing_datastore }}"
+      size_kb: "{{ vmware_instance_disk_facts.guest_disk_facts[item].capacity_in_kb }}"
+      type: >-
+             {%- if vmware_instance_disk_facts.guest_disk_facts[item].backing_thinprovisioned -%}
+             thin
+             {%- else -%}
+             thick
+             {%- endif -%}
+  with_items: "{{ ( vmware_instance_disk_facts.guest_disk_facts.keys() | sort )[1:] }}"
+  when: vmware_instance_exists
+  register: task_result
+
+# The result registered in the last task is a list of dicts; each item in that list corresponds to a temporary dict
+# that was built (and other extraneous information). This will extract each of those temporary dicts and place them
+# in a single list of dicts
+- set_fact:
+    vmware_instance_priv_list: "{{ ( vmware_instance_priv_list | default([]) ) + [ item.ansible_facts.vmware_instance_temp_dict ] }}"
+  with_items: "{{ task_result.results }}"
+  when: vmware_instance_exists
+
+# Finally, the OS disk dict is added as the first item (index 0) of the list built in the previous task
+# The resulting list can be used with the vmware_guest module
+- set_fact:
+    vmware_instance_priv_list: "{{ vmware_instance_os_disk + vmware_instance_priv_list | default([]) }}"
+  when: vmware_instance_exists
