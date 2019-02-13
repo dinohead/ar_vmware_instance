@@ -8,7 +8,8 @@
     name: "{{ vmware_instance_name }}"
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster }}"
+    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: poweredon
     validate_certs: false
     wait_for_ip_address: true
