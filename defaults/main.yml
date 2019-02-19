@@ -1,6 +1,5 @@
 ---
 ansible_python_interpreter: python
-vmware_instance_cluster: "mycluster"
 vmware_instance_cpus: 1
 vmware_instance_datacenter: "datacenter"
 vmware_instance_datastore: "datastore"

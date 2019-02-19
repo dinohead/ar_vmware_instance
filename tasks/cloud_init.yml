@@ -8,7 +8,8 @@
     name: "{{ vmware_instance_name }}"
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster }}"
+    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false
     template: "{{ vmware_instance_template }}"
@@ -75,7 +76,8 @@
     name: "{{ vmware_instance_name }}"
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster }}"
+    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false
     force: true
@@ -111,7 +113,7 @@
     datacenter: "{{ vmware_instance_datacenter }}"
     validate_certs: false
   register: vmware_instance_guest_facts
-  retries: 24
+  retries: 40
   delay: 10
   until: vmware_instance_guest_facts.instance.ipv4
 
@@ -144,7 +146,8 @@
     name: "{{ vmware_instance_name }}"
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster }}"
+    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false
     force: true
