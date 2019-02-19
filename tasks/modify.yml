@@ -15,8 +15,7 @@
     hardware:
       memory_mb: "{{ vmware_instance_memory }}"
       num_cpus: "{{ vmware_instance_cpus }}"
-    networks:
-    - name: "{{ vmware_instance_network }}"
+    networks: "{{ vmware_instance_network }}"
   changed_when: false
 
 - name: VMWARE_GUEST_POWERSTATE| Ensure VM powered on
@@ -28,18 +27,4 @@
     folder: "{{ vmware_instance_folder }}"
     state: poweredon
     validate_certs: false
-    wait_for_ip_address: true
-
-- name: VMWARE_GUEST_FACTS | Get facts on the VM
-  vmware_guest_facts:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    validate_certs: false
-  register: vmware_instance_guest_facts
-
-- set_fact:
-    vmware_instance_host_ip: "{{ vmware_instance_guest_facts.instance.ipv4 }}"
+    wait_for_ip_address: false

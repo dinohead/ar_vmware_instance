@@ -89,8 +89,7 @@
     hardware:
       memory_mb: "{{ vmware_instance_memory }}"
       num_cpus: "{{ vmware_instance_cpus }}"
-    networks:
-    - name: "{{ vmware_instance_network }}"
+    networks: "{{ vmware_instance_network }}"
 
 - name: VMWARE_GUEST_POWERSTATE| Ensure VM powered on
   vmware_guest:
