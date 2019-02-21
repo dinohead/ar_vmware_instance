@@ -4,6 +4,7 @@ See [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 |Version|Codename|Date      |Notes                                                               |
 |:------|:-------|:---------|:-------------------------------------------------------------------|
+|0.3.0  |Red     |2019-01-07|Added better support for non-cloud-init Linux hosts                 |
 |0.2.5  |Tommy   |2019-01-07|Proxibid hates DRS clusters                                         |
 |0.2.4  |Tommy   |2019-01-07|Github Release                                                      |
 |0.2.3  |Tommy   |2018-10-25|Fixed task that sets hosts_ip to handle filtering out IPv6 addresses|
