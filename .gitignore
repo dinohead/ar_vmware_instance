@@ -316,4 +316,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+*.di2e
 # End of https://www.gitignore.io/api/vim,linux,python,windows,eclipse,ansible,intellij,intellij+all

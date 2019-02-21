@@ -15,9 +15,14 @@
   include: "clone.yml"
   when: not vmware_instance_cloudinit and not vmware_instance_exists
 
-- name: including tasks existing instances
+- name: including tasks for existing instances
   include: "modify.yml"
   when: vmware_instance_exists
 
+- name: Run setup commands on new guests
+  include: "runcmd.yml"
+  when: not vmware_instance_exists and vmware_instance_runcmd is defined and vmware_instance_runcmd != false
+
 - name: Get the IP for the instance
   include: "get_ip.yml"
+  when: vmware_instance_wait_for_ip
