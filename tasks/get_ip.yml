@@ -1,6 +1,6 @@
 ---
 
-- name: VMWARE_GUEST_FACTS | Get facts on the VM
+- name: VMWARE_GUEST_FACTS | Wait for VM to be assigned IP address
   vmware_guest_facts:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username }}"
@@ -10,6 +10,9 @@
     datacenter: "{{ vmware_instance_datacenter }}"
     validate_certs: false
   register: vmware_instance_guest_facts
+  retries: 24
+  delay: 10
+  until: vmware_instance_guest_facts.instance.ipv4
 
 - set_fact:
     vmware_instance_primary_nic: "{{ 'hw_' + vmware_instance_guest_facts.instance.hw_interfaces[0] }}"

@@ -75,3 +75,16 @@
 - set_fact:
     vmware_instance_priv_list: "{{ vmware_instance_os_disk + vmware_instance_priv_list | default([]) }}"
   when: vmware_instance_exists
+
+
+# Include tasks to coax vmware_instance_network into a list if it wasn't provided as a list
+# This is for backward comparability
+- set_fact:
+    vmware_instance_network: "{{ [] + vmware_instance_network }}"
+  ignore_errors: true
+  register: task_result
+
+- set_fact:
+    vmware_instance_network:
+      - name: "{{ vmware_instance_network }}"
+  when: task_result.failed
