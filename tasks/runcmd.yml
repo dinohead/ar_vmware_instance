@@ -8,7 +8,52 @@
     folder: "{{ vmware_instance_folder }}"
     validate_certs: false
 
-- name: VMWARE_VM_SHELL | Wait until shell is available
+- name: VMWARE_GUEST_FACTS | Determine instance OS Type
+  local_action:
+    module: vmware_guest_facts
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username }}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    folder: "{{ vmware_instance_folder }}"
+    validate_certs: no
+    name: "{{ vmware_instance_name }}"
+  register: task_result
+  ignore_errors: true
+  retries: 50
+  until:
+    - task_result.instance is defined
+    - task_result.instance.hw_guest_id is defined
+    - ( task_result.instance.hw_guest_id | trim ) != ''
+    - not task_result.instance.hw_guest_id is none
+
+- set_fact:
+    vmware_instance_is_windows: true
+  when: "'windows' in (task_result.instance.hw_guest_id | lower )"
+
+- name: VMWARE_VM_SHELL | Wait until command prompt is available on Windows guests
+  vmware_vm_shell:
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username}}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    vm_id: "{{ vmware_instance_name }}"
+    validate_certs: false
+    vm_username: 'Administrator'
+    vm_password: "{{ vmware_instance_root_password }}"
+    vm_shell: 'c:\windows\system32\windowspowershell\v1.0\powershell.exe'
+    vm_shell_args: '-command "& {Write-Host \"Hello Wolrd\"}"'
+  register: task_result
+  retries: 50
+  until: not task_result.failed
+  ignore_errors: true
+  when: vmware_instance_is_windows
+
+- fail:
+    msg: 'Not able to log into instance and run command'
+  when: task_result.failed is defined and task_result.failed and vmware_instance_is_windows
+
+- name: VMWARE_VM_SHELL | Wait until shell is available is available on Linux guests
   vmware_vm_shell:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username}}"
@@ -24,16 +69,17 @@
   retries: 50
   until: not task_result.failed
   ignore_errors: true
+  when: not vmware_instance_is_windows
 
 - fail:
     msg: 'Not able to log into instance and run command'
-  when: task_result.failed
+  when: task_result.failed is defined and task_result.failed and not vmware_instance_is_windows
 
 - name: PAUSE | Wait for VM to finish booting
   pause:
     seconds: 20
 
-- name: Run commands on host
+- name: VMWARE_VM_SHELL | Run commands on Linux guests
   vmware_vm_shell:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username}}"
@@ -44,5 +90,22 @@
     vm_username: root
     wait_for_process: true
     vm_password: "{{ vmware_instance_root_password }}"
-    vm_shell: /usr/bin/printf
+    vm_shell: '/usr/bin/printf'
     vm_shell_args: ' ''hello world'';{% for item in vmware_instance_runcmd %}{{ item }};{% endfor %}'
+  when: not vmware_instance_is_windows
+
+- name: VMWARE_VM_SHELL | Run commands on Windows guests
+  vmware_vm_shell:
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username}}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    vm_id: "{{ vmware_instance_name }}"
+    validate_certs: false
+    vm_username: 'Administrator'
+    wait_for_process: true
+    vm_password: "{{ vmware_instance_root_password }}"
+    vm_shell: 'c:\windows\system32\windowspowershell\v1.0\powershell.exe'
+    vm_shell_args: "{{ item }}"
+  with_items: "{{ vmware_instance_runcmd }}"
+  when: vmware_instance_is_windows

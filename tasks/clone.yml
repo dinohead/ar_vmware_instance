@@ -22,3 +22,4 @@
       memory_mb: "{{ vmware_instance_memory }}"
       num_cpus: "{{ vmware_instance_cpus }}"
     networks: "{{ vmware_instance_network }}"
+    customization: "{{ vmware_instance_customization | default( omit ) }}"
