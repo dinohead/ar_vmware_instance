@@ -28,6 +28,9 @@
     - not task_result.instance.hw_guest_id is none
 
 - set_fact:
+    vmware_instance_is_windows: fasle
+
+- set_fact:
     vmware_instance_is_windows: true
   when: "'windows' in (task_result.instance.hw_guest_id | lower )"
 
