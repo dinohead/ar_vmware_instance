@@ -15,9 +15,9 @@
     wait_for_ip_address: false
     template: "{{ vmware_instance_template }}"
     disk:
-    - size_gb: "{{ vmware_instance_disk_size }}"
-      type: thin
-      datastore: "{{ vmware_instance_datastore }}"
+      - size_gb: "{{ vmware_instance_disk_size }}"
+        type: thin
+        datastore: "{{ vmware_instance_datastore }}"
     hardware:
       memory_mb: "{{ vmware_instance_memory }}"
       num_cpus: "{{ vmware_instance_cpus }}"
