@@ -28,7 +28,7 @@
     - not task_result.instance.hw_guest_id is none
 
 - set_fact:
-    vmware_instance_is_windows: fasle
+    vmware_instance_is_windows: false
 
 - set_fact:
     vmware_instance_is_windows: true
