@@ -78,9 +78,13 @@
     msg: 'Not able to log into instance and run command'
   when: task_result.failed is defined and task_result.failed and not vmware_instance_is_windows
 
-- name: PAUSE | Wait for VM to finish booting
-  pause:
-    seconds: 20
+#- name: PAUSE | Wait for VM to finish booting
+#  pause:
+#    seconds: 20
+
+- name: WAIT_FOR | Wait for VM to finish booting
+  wait_for:
+    timeout: 20
 
 - name: VMWARE_VM_SHELL | Run commands on Linux guests
   vmware_vm_shell:
