@@ -13,3 +13,5 @@ vmware_instance_vcenter_fqdn: "vcenter.domain.com"
 vmware_instance_vcenter_password: "CHANGEME"
 vmware_instance_vcenter_username: "admin"
 vmware_instance_cloudinit: false
+vmware_instance_wait_for_ip: true
+vmware_instance_runcmd: false
