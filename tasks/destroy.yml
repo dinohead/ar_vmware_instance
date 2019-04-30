@@ -1,0 +1,14 @@
+---
+- name: VMWARE_GUEST | Remove VMware instance
+  vmware_guest:
+    hostname: "{{ vmware_instance_vcenter_fqdn }}"
+    username: "{{ vmware_instance_vcenter_username }}"
+    password: "{{ vmware_instance_vcenter_password }}"
+    name: "{{ vmware_instance_name }}"
+    folder: "{{ vmware_instance_folder }}"
+    datacenter: "{{ vmware_instance_datacenter }}"
+    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+    state: absent
+    force: true
+    validate_certs: false

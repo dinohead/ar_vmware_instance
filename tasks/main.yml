@@ -5,24 +5,28 @@
 
 - name: including validation tasks for cloud-init
   include: "validate.yml"
-  when: vmware_instance_cloudinit and not vmware_instance_exists
+  when: vmware_instance_cloudinit and not vmware_instance_exists and vmware_instance_state == 'present'
 
 - name: including tasks for cloud-init
   include: "cloud_init.yml"
-  when: vmware_instance_cloudinit and not vmware_instance_exists
+  when: vmware_instance_cloudinit and not vmware_instance_exists and vmware_instance_state == 'present'
 
 - name: including tasks for standard templates
   include: "clone.yml"
-  when: not vmware_instance_cloudinit and not vmware_instance_exists
+  when: not vmware_instance_cloudinit and not vmware_instance_exists and vmware_instance_state == 'present'
 
 - name: including tasks for existing instances
   include: "modify.yml"
-  when: vmware_instance_exists
+  when: vmware_instance_exists and vmware_instance_state == 'present'
 
 - name: Run setup commands on new guests
   include: "runcmd.yml"
-  when: not vmware_instance_exists and vmware_instance_runcmd is defined and vmware_instance_runcmd != false
+  when: not vmware_instance_exists and vmware_instance_runcmd is defined and vmware_instance_runcmd != false and vmware_instance_state == 'present'
 
 - name: Get the IP for the instance
   include: "get_ip.yml"
-  when: vmware_instance_wait_for_ip
+  when: vmware_instance_wait_for_ip and vmware_instance_state == 'present'
+
+- name: Destroy Instance
+  include: "destroy.yml"
+  when: vmware_instance_exists and vmware_instance_state == 'absent'

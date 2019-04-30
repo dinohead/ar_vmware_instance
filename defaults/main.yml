@@ -15,3 +15,4 @@ vmware_instance_vcenter_username: "admin"
 vmware_instance_cloudinit: false
 vmware_instance_wait_for_ip: true
 vmware_instance_runcmd: false
+vmware_instance_state: present
