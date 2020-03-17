@@ -1,5 +1,9 @@
 ---
 
+- fail:
+    msg: "vmware_instance_state must be set to 'present' or 'absent'"
+  when: not ( vmware_instance_state == 'present' or vmware_instance_state == 'absent' )
+
 - name: check if instance exists
   include: "prepare.yml"
 
