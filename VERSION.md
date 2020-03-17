@@ -4,6 +4,7 @@ See [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 |Version|Codename|Date      |Notes                                                               |
 |:------|:-------|:---------|:-------------------------------------------------------------------|
+|0.5.1  |Hayworth|2020-03-17|Added ability to target Resource Pool|
 |0.5.0  |Hayworth|2019-04-29|Adding support for removing an instance                             |
 |0.4.0  |Norton  |2019-04-18|Adding support for boot strapping Windows hosts with runcmd         |
 |0.3.0  |Red     |2019-01-07|Added better support for non-cloud-init Linux hosts                 |

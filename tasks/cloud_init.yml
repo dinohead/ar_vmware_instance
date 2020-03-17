@@ -9,13 +9,14 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
     esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false
     template: "{{ vmware_instance_template }}"
 
-- name: VMWARE_GUEST_FACTS | Gather facts about the new host
-  vmware_guest_facts:
+- name: VMWARE_GUEST_INFO | Gather facts about the new host
+  vmware_guest_info:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username }}"
     password: "{{ vmware_instance_vcenter_password }}"
@@ -23,7 +24,7 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     validate_certs: false
-  register: vmware_instance_guest_facts
+  register: vmware_instance_guest_info
 
 - name: TEMPFILE | Create a temporary directory on the localhost
   become: true
@@ -77,6 +78,7 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
     esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false
@@ -103,8 +105,8 @@
     state: poweredon
     validate_certs: false
 
-- name: VMWARE_GUEST_FACTS | Wait for VM to be assigned IP address
-  vmware_guest_facts:
+- name: VMWARE_GUEST_INFO | Wait for VM to be assigned IP address
+  vmware_guest_info:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username }}"
     password: "{{ vmware_instance_vcenter_password }}"
@@ -112,10 +114,10 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     validate_certs: false
-  register: vmware_instance_guest_facts
+  register: vmware_instance_guest_info
   retries: 100
   delay: 10
-  until: vmware_instance_guest_facts.instance.ipv4
+  until: vmware_instance_guest_info.instance.ipv4
 
 - name: Get the IP for the instance
   include: "get_ip.yml"
@@ -147,6 +149,7 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
     esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false

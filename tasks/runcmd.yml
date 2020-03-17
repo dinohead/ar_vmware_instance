@@ -1,5 +1,5 @@
 ---
-- name: VMWARE_GUEST_FACTS | Wait for VMware tools to become available
+- name: VMWARE_GUEST_TOOLS_WAIT | Wait for VMware tools to become available
   vmware_guest_tools_wait:
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username}}"
@@ -8,9 +8,9 @@
     folder: "{{ vmware_instance_folder }}"
     validate_certs: false
 
-- name: VMWARE_GUEST_FACTS | Determine instance OS Type
+- name: VMWARE_GUEST_INFO | Determine instance OS Type
   local_action:
-    module: vmware_guest_facts
+    module: vmware_guest_info
     hostname: "{{ vmware_instance_vcenter_fqdn }}"
     username: "{{ vmware_instance_vcenter_username }}"
     password: "{{ vmware_instance_vcenter_password }}"

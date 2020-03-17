@@ -9,6 +9,7 @@
     folder: "{{ vmware_instance_folder }}"
     datacenter: "{{ vmware_instance_datacenter }}"
     cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
     esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
     state: present
     validate_certs: false

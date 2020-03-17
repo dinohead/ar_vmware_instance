@@ -13,27 +13,29 @@ This role also assumes that all VM names are unique within a vCenter. If you alr
 
 ## Role Variables
 
-|parameter                              |required|default                                 |choices|comments|
-|:--------------------------------------|--------|----------------------------------------|-------|--------|
-|ansible_python_interpreter             |no      |python                                  |       |This role is normally run on the localhost in a virtual environment. Setting this default variable prevents the error message: <code>Do you have packaging installed? Try 'pip install packaging'- No module named packaging.version</code>. You probably don't want to override this variable unless you know what you're doing.|
-|vmware_instance_cluster                |yes     |"mycluster"                             |       |The name of the Vcenter cluster to deploy to.|
-|vmware_instance_cpus                   |no      |1                                       |       |The number of CPUs assigned to the VM|
-|vmware_instance_datacenter             |yes     |"datacenter"                            |       |The Vcenter datacenter to deploy to|
-|vmware_instance_datastore              |yes     |"datastore"                             |       |The Vcenter datastore to deploy to|
-|vmware_instance_disk_size              |no      |30                                      |       |The disk size fore the VM|
-|vmware_instance_folder                 |yes     |`"/{{ vmware_instance_datacenter }}/vm"`|       |The folder in Vcenter to deploy to|
-|vmware_instance_memory                 |no      |1048                                    |       |The amount of memory assigned to the VM|
-|vmware_instance_name                   |no      |`"{{ inventory_hostname_short }}"`      |       |The name given to the VM in Vcenter|
-|vmware_instance_network                |yes     |"network"                               |       |The network to connect the VM to|
-|vmware_instance_template               |yes     |"template"                              |       |The template to use to create the VM|
-|vmware_instance_vcenter_fqdn           |yes     |"vcenter.domain.com"                    |       |The fully qualified domain name of the Vcenter|
-|vmware_instance_vcenter_password       |yes     |"CHANGEME"                              |       |Password for Vcenter account with permission to deploy VM|
-|vmware_instance_vcenter_username       |yes     |"admin'                                 |       |Username for Vcenter account with permission to deploy VM|
-|vmware_instance_cloudinit              |no      |false                                   |       |Set this variable to true to use cloud-init to initialize a "cloud-init ready" image|
-|vmware_instance_cloudinit_iso_path     |no      |undefined                               |       |This parameter is required when `vmware_instance_cloud_init = true`. Cloud-init on VMware requires uploading an ISO to vCenter with the cloud-init config. This variable is the vCenter datastore path for the ISO that will be uploaded. This ISO will remain after completion of this role. Any file with the same path will be overridden.|
-|vmware_instance_cloudinit_iso_datastore|no      |undefined                               |       |This parameter is required when `vmware_instance_cloud_init = true`. The vCenter datastore for the ISO that will be uploaded for cloud-init.|
-|vmware_instance_cloudinit_meta_data    |no      |undefined                               |       |This parameter is required when `vmware_instance_cloud_init = true`. A correctly formatted |
-|vmware_instance_cloudinit_cloud_config |no      |undefined                               |       |This parameter is required when `vmware_instance_cloud_init = true`.|
+|parameter                              |required|default                                 |choices                            |comments|
+|:--------------------------------------|--------|----------------------------------------|-----------------------------------|--------|
+|ansible_python_interpreter             |no      |python                                  |                                   |This role is normally run on the localhost in a virtual environment. Setting this default variable prevents the error message: <code>Do you have packaging installed? Try 'pip install packaging'- No module named packaging.version</code>. You probably don't want to override this variable unless you know what you're doing.|
+|vmware_instance_cluster                |yes     |"mycluster"                             |                                   |The name of the vCenter cluster to deploy to|
+|vmware_instance_cpus                   |no      |1                                       |                                   |The number of CPUs assigned to the VM|
+|vmware_instance_datacenter             |yes     |"datacenter"                            |                                   |The vCenter datacenter to deploy to|
+|vmware_instance_datastore              |yes     |"datastore"                             |                                   |The vCenter datastore to deploy to|
+|vmware_instance_disk_size              |no      |30                                      |                                   |The disk size fore the VM|
+|vmware_instance_folder                 |yes     |`"/{{ vmware_instance_datacenter }}/vm"`|                                   |The folder in vCenter to deploy to|
+|vmware_instance_memory                 |no      |1048                                    |                                   |The amount of memory assigned to the VM|
+|vmware_instance_name                   |no      |`"{{ inventory_hostname_short }}"`      |                                   |The name given to the VM in Vcenter|
+|vmware_instance_network                |yes     |"network"                               |                                   |The network to connect the VM to|
+|vmware_instance_resource_pool          |no      |undefined                               |                                   |The vCenter resource pool to deploy instance to|
+|vmware_instance_state                  |yes     |"present"                               |<ul><li>present</li><li>absent</li>|Set to present to ensure instance exists, set to absent to ensure instance is destroyed|
+|vmware_instance_template               |yes     |"template"                              |                                   |The template to use to create the VM|
+|vmware_instance_vcenter_fqdn           |yes     |"vcenter.domain.com"                    |                                   |The fully qualified domain name of the Vcenter|
+|vmware_instance_vcenter_password       |yes     |"CHANGEME"                              |                                   |Password for vCenter account with permission to deploy VM|
+|vmware_instance_vcenter_username       |yes     |"admin'                                 |                                   |Username for vCenter account with permission to deploy VM|
+|vmware_instance_cloudinit              |no      |false                                   |<ul><li>true</li><li>false</li>    |Set this variable to true to use cloud-init to initialize a "cloud-init ready" image|
+|vmware_instance_cloudinit_iso_path     |no      |undefined                               |                                   |This parameter is required when `vmware_instance_cloud_init = true`. Cloud-init on VMware requires uploading an ISO to vCenter with the cloud-init config. This variable is the vCenter datastore path for the ISO that will be uploaded. This ISO will remain after completion of this role. Any file with the same path will be overridden.|
+|vmware_instance_cloudinit_iso_datastore|no      |undefined                               |                                   |This parameter is required when `vmware_instance_cloud_init = true`. The vCenter datastore for the ISO that will be uploaded for cloud-init.|
+|vmware_instance_cloudinit_meta_data    |no      |undefined                               |                                   |This parameter is required when `vmware_instance_cloud_init = true`. A correctly formatted |
+|vmware_instance_cloudinit_cloud_config |no      |undefined                               |                                   |This parameter is required when `vmware_instance_cloud_init = true`.|
 
 ## Example Playbook
 
