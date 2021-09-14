@@ -1,32 +1,34 @@
 ---
 
 - name: VMWARE_GUEST | Modify instance
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
-    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
-    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
-    state: present
-    validate_certs: false
-    disk: "{{ vmware_instance_priv_list }}"
-    hardware:
-      memory_mb: "{{ vmware_instance_memory }}"
-      num_cpus: "{{ vmware_instance_cpus }}"
-    networks: "{{ vmware_instance_network }}"
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+      resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
+      esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+      state: present
+      validate_certs: false
+      disk: "{{ vmware_instance_priv_list }}"
+      hardware:
+        memory_mb: "{{ vmware_instance_memory }}"
+        num_cpus: "{{ vmware_instance_cpus }}"
+      networks: "{{ vmware_instance_network }}"
   changed_when: false
 
 - name: VMWARE_GUEST_POWERSTATE| Ensure VM powered on
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    state: poweredon
-    validate_certs: false
-    wait_for_ip_address: false
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      state: poweredon
+      validate_certs: false
+      wait_for_ip_address: false

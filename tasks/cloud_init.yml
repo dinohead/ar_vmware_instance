@@ -1,49 +1,53 @@
 ---
 
 - name: VMWARE_GUEST | Ensure VMs exist in VMware
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
-    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
-    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
-    state: present
-    validate_certs: false
-    template: "{{ vmware_instance_template }}"
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+      resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
+      esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+      state: present
+      validate_certs: false
+      template: "{{ vmware_instance_template }}"
 
 - name: VMWARE_GUEST_INFO | Gather facts about the new host
-  vmware_guest_info:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    validate_certs: false
+  local_action:
+      module: vmware_guest_info
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      validate_certs: false
   register: vmware_instance_guest_info
 
 - name: TEMPFILE | Create a temporary directory on the localhost
   become: true
   become_user: root
-  tempfile:
-    state: directory
-    suffix: temp_iso
+  local_action:
+      module: tempfile
+      state: directory
+      suffix: temp_iso
   register: vmware_instance_tempdir
   changed_when: false
 
 - name: TEMPLATE | Template the cloud-init script on the localhost
   become: true
   become_user: root
-  template:
-    src: "j2.{{ item }}.yml"
-    dest: "{{ vmware_instance_tempdir.path }}/{{ item }}"
-    owner: root
-    group: root
-    mode: 'u=r,g=,o='
+  local_action:
+      module: template
+      src: "j2.{{ item }}.yml"
+      dest: "{{ vmware_instance_tempdir.path }}/{{ item }}"
+      owner: root
+      group: wheel
+      mode: 'u=r,g=,o='
   changed_when: false
   with_items:
   - user-data
@@ -52,68 +56,74 @@
 - name: SHELL | Build the cloud-init script into an ISO
   become: true
   become_user: root
-  shell: "/usr/bin/genisoimage -output {{ vmware_instance_name }}.iso -volid cidata -joliet -rock user-data meta-data"
+  local_action:
+      module: shell 
+      _raw_params: "mkisofs -output {{ vmware_instance_name }}.iso -volid cidata -joliet -rock user-data meta-data"
   args:
     chdir: "{{ vmware_instance_tempdir.path }}"
 
 - name: VSPHERE_COPY | Upload the ISO to vCenter
   become: true
   become_user: root
-  vsphere_copy:
-    host: "{{ vmware_instance_vcenter_fqdn }}"
-    login: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    datastore: "{{ vmware_instance_cloudinit_iso_datastore }}"
-    validate_certs: false
-    path: "{{ vmware_instance_cloudinit_iso_path }}"
-    src: "{{ vmware_instance_tempdir.path }}/{{ vmware_instance_name }}.iso"
+  local_action:
+      module: vsphere_copy
+      host: "{{ vmware_instance_vcenter_fqdn }}"
+      login: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      datastore: "{{ vmware_instance_cloudinit_iso_datastore }}"
+      validate_certs: false
+      path: "{{ vmware_instance_cloudinit_iso_path }}"
+      src: "{{ vmware_instance_tempdir.path }}/{{ vmware_instance_name }}.iso"
 
 - name: VMWARE_GUEST | Customize VM
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
-    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
-    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
-    state: present
-    validate_certs: false
-    force: true
-    cdrom:
-      type: iso
-      iso_path: "[{{ vmware_instance_cloudinit_iso_datastore }}] {{ vmware_instance_cloudinit_iso_path }}"
-    disk:
-    - size_gb: "{{ vmware_instance_disk_size }}"
-      type: thin
-      datastore: "{{ vmware_instance_datastore }}"
-    hardware:
-      memory_mb: "{{ vmware_instance_memory }}"
-      num_cpus: "{{ vmware_instance_cpus }}"
-    networks: "{{ vmware_instance_network }}"
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+      resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
+      esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+      state: present
+      validate_certs: false
+      force: true
+      cdrom:
+        type: iso
+        iso_path: "[{{ vmware_instance_cloudinit_iso_datastore }}] {{ vmware_instance_cloudinit_iso_path }}"
+      disk:
+      - size_gb: "{{ vmware_instance_disk_size }}"
+        type: thin
+        datastore: "{{ vmware_instance_datastore }}"
+      hardware:
+        memory_mb: "{{ vmware_instance_memory }}"
+        num_cpus: "{{ vmware_instance_cpus }}"
+      networks: "{{ vmware_instance_network }}"
 
 - name: VMWARE_GUEST_POWERSTATE| Ensure VM powered on
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    state: poweredon
-    validate_certs: false
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      state: poweredon
+      validate_certs: false
 
 - name: VMWARE_GUEST_INFO | Wait for VM to be assigned IP address
-  vmware_guest_info:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    validate_certs: false
+  local_action:
+      module: vmware_guest_info
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      validate_certs: false
   register: vmware_instance_guest_info
   retries: 100
   delay: 10
@@ -121,6 +131,9 @@
 
 - name: Get the IP for the instance
   include: "get_ip.yml"
+
+- debug:
+    var: vmware_instance_host_ip
 
 - name: RAW | Wait for cloud-init to finish
   raw: /bin/ls /var/lib/cloud/instance/boot-finished
@@ -141,21 +154,22 @@
   delegate_to: "{{ vmware_instance_host_ip }}"
 
 - name: VMWARE_GUEST | Disconnect cloud-init ISO
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
-    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
-    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
-    state: present
-    validate_certs: false
-    force: true
-    cdrom:
-      type: none
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+      resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
+      esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+      state: present
+      validate_certs: false
+      force: true
+      cdrom:
+        type: none
 
 - name: FILE | Remove temporary files
   become: true

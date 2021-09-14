@@ -1,14 +1,15 @@
 ---
 
 - name: VMWARE_GUEST_INFO | Wait for VM to be assigned IP address
-  vmware_guest_info:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    validate_certs: false
+  local_action:
+      module: vmware_guest_info
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      validate_certs: false
   register: vmware_instance_guest_info
   retries: 24
   delay: 10
