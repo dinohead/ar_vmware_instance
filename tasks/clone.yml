@@ -1,26 +1,27 @@
 ---
 
 - name: VMWARE_GUEST | Ensure VMs exist in VMware
-  vmware_guest:
-    hostname: "{{ vmware_instance_vcenter_fqdn }}"
-    username: "{{ vmware_instance_vcenter_username }}"
-    password: "{{ vmware_instance_vcenter_password }}"
-    name: "{{ vmware_instance_name }}"
-    folder: "{{ vmware_instance_folder }}"
-    datacenter: "{{ vmware_instance_datacenter }}"
-    cluster: "{{ vmware_instance_cluster | default( omit ) }}"
-    resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
-    esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
-    state: poweredon
-    validate_certs: false
-    wait_for_ip_address: false
-    template: "{{ vmware_instance_template }}"
-    disk:
-      - size_gb: "{{ vmware_instance_disk_size }}"
-        type: thin
-        datastore: "{{ vmware_instance_datastore }}"
-    hardware:
-      memory_mb: "{{ vmware_instance_memory }}"
-      num_cpus: "{{ vmware_instance_cpus }}"
-    networks: "{{ vmware_instance_network }}"
-    customization: "{{ vmware_instance_customization | default( omit ) }}"
+  local_action:
+      module: vmware_guest
+      hostname: "{{ vmware_instance_vcenter_fqdn }}"
+      username: "{{ vmware_instance_vcenter_username }}"
+      password: "{{ vmware_instance_vcenter_password }}"
+      name: "{{ vmware_instance_name }}"
+      folder: "{{ vmware_instance_folder }}"
+      datacenter: "{{ vmware_instance_datacenter }}"
+      cluster: "{{ vmware_instance_cluster | default( omit ) }}"
+      resource_pool: "{{ vmware_instance_resource_pool | default( omit ) }}"
+      esxi_hostname: "{{ vmware_instance_esxi_host | default( omit ) }}"
+      state: poweredon
+      validate_certs: false
+      wait_for_ip_address: false
+      template: "{{ vmware_instance_template }}"
+      disk:
+        - size_gb: "{{ vmware_instance_disk_size }}"
+          type: thin
+          datastore: "{{ vmware_instance_datastore }}"
+      hardware:
+        memory_mb: "{{ vmware_instance_memory }}"
+        num_cpus: "{{ vmware_instance_cpus }}"
+      networks: "{{ vmware_instance_network }}"
+      customization: "{{ vmware_instance_customization | default( omit ) }}"

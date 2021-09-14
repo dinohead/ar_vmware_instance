@@ -4,6 +4,7 @@ See [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 |Version|Codename|Date      |Notes                                                               |
 |:------|:-------|:---------|:-------------------------------------------------------------------|
+|0.6.0  |Bogs    |2021-09-13|Updating for latest Ansible version|
 |0.5.2  |Hayworth|2020-03-17|Eliminating unnecessary cod that was causing errors|
 |0.5.1  |Hayworth|2020-03-17|Added ability to target Resource Pool|
 |0.5.0  |Hayworth|2019-04-29|Adding support for removing an instance                             |
